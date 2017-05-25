@@ -202,7 +202,6 @@ public class AppleMidiSessionServer implements AppleMidiCommandListener, AppleMi
 			}
 		} else if (clockSynchronization.getCount() == (byte) 2) {
 			final long offsetEstimate = (clockSynchronization.getTimestamp3() + clockSynchronization.getTimestamp1()) / 2 - clockSynchronization.getTimestamp2();
-
 			final AppleMidiSessionAppleMidiServer midiServer = currentSessions.get(clockSynchronization.getSsrc());
 			if (midiServer != null) {
 				midiServer.getAppleMidiSession().setOffsetEstimate(offsetEstimate);
@@ -234,7 +233,7 @@ public class AppleMidiSessionServer implements AppleMidiCommandListener, AppleMi
 		}
 	}
 
-	public void sendMidiMessage(List<MidiMessage> messages, AppleMidiServer appleMidiServer) throws Exception {
+	public void sendMidiMessage(List<MidiMessage> messages) throws Exception {
 		MidiCommandHeader header = new MidiCommandHeader(false, false, false, false, (short) 0, new RtpHeader((byte) 2, false, false, (byte) 0, false, (byte) 97, sequenceNumber++, 0, ssrc));
 		final AppleMidiMessage msg = new AppleMidiMessage(header, messages);
 		send(new AppleMidiCommand(null, ssrc) {
@@ -243,7 +242,7 @@ public class AppleMidiSessionServer implements AppleMidiCommandListener, AppleMi
 			public byte[] toByteArray() throws IOException {
 				return msg.getBytes();
 			}
-		}, appleMidiServer);
+		}, currentSessions.get(ssrc).getAppleMidiServer());
 	}
 
 	/**
