@@ -32,7 +32,11 @@ public class BidirectionalMidiSession extends JavaxAppleMidiSession implements T
 		io.github.leovr.rtipmidi.model.MidiMessage msg = new io.github.leovr.rtipmidi.model.MidiMessage(message.getMessage(), message.getLength()) {
 		};
 		try {
-			server.sendMidiMessage(Arrays.asList(msg), new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port));
+			io.github.leovr.rtipmidi.model.AppleMidiServer s = null;
+			if(inetAddress!=null&&port>0){
+				s = new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port);
+			}
+			server.sendMidiMessage(Arrays.asList(msg), s);
 		} catch (Exception e) {
 		}
 	}
