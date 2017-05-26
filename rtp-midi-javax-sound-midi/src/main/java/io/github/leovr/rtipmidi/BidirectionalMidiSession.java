@@ -2,6 +2,8 @@ package io.github.leovr.rtipmidi;
 
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.sound.midi.MidiMessage;
@@ -14,11 +16,9 @@ import lombok.Setter;
 public class BidirectionalMidiSession extends JavaxAppleMidiSession implements Transmitter, Receiver {
 	@Nonnull
 	private AppleMidiServer server;
-	@Nonnull
-	private InetAddress inetAddress;
-	private int port;
-
 	private Receiver receiver;
+    private InetAddress inetAddress;
+    private int port;
 
 	@Override
 	protected void onMidiMessage(MidiMessage message, long timestamp) {
@@ -37,6 +37,19 @@ public class BidirectionalMidiSession extends JavaxAppleMidiSession implements T
 				s = new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port);
 			}
 			server.sendMidiMessage(Arrays.asList(msg), s);
+		} catch (Exception e) {
+		}
+	}
+
+	public void send(List<MidiMessage> list) {
+		List<io.github.leovr.rtipmidi.model.MidiMessage> l1 = list.stream().map(o -> new io.github.leovr.rtipmidi.model.MidiMessage(o.getMessage(), o.getLength()) {
+		}).collect(Collectors.toList());
+		try {
+			io.github.leovr.rtipmidi.model.AppleMidiServer s = null;
+			if(inetAddress!=null&&port>0){
+				s = new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port);
+			}
+			server.sendMidiMessage(l1, s);
 		} catch (Exception e) {
 		}
 	}

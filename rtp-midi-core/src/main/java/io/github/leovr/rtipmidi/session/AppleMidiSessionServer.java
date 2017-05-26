@@ -202,7 +202,6 @@ public class AppleMidiSessionServer implements AppleMidiCommandListener, AppleMi
 			}
 		} else if (clockSynchronization.getCount() == (byte) 2) {
 			final long offsetEstimate = (clockSynchronization.getTimestamp3() + clockSynchronization.getTimestamp1()) / 2 - clockSynchronization.getTimestamp2();
-
 			final AppleMidiSessionAppleMidiServer midiServer = currentSessions.get(clockSynchronization.getSsrc());
 			if (midiServer != null) {
 				midiServer.getAppleMidiSession().setOffsetEstimate(offsetEstimate);
@@ -246,7 +245,7 @@ public class AppleMidiSessionServer implements AppleMidiCommandListener, AppleMi
 			public byte[] toByteArray() throws IOException {
 				return msg.getBytes();
 			}
-		}, appleMidiServer);
+		}, currentSessions.get(ssrc).getAppleMidiServer());
 	}
 
 	/**

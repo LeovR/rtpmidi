@@ -88,8 +88,8 @@ public class AppleMidiServer implements SessionChangeListener {
 		log.info("AppleMidiServer stopped");
 	}
 
-	public void sendMidiMessage(List<MidiMessage> messages, io.github.leovr.rtipmidi.model.AppleMidiServer appleMidiServer) throws Exception {
-		sessionServer.sendMidiMessage(messages, appleMidiServer);
+	public void sendMidiMessage(List<MidiMessage> messages) throws Exception {
+		sessionServer.sendMidiMessage(messages);
 	}
 
 }
