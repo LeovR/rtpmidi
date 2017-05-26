@@ -17,8 +17,8 @@ public class BidirectionalMidiSession extends JavaxAppleMidiSession implements T
 	@Nonnull
 	private AppleMidiServer server;
 	private Receiver receiver;
-    private InetAddress inetAddress;
-    private int port;
+	private InetAddress inetAddress;
+	private int port;
 
 	@Override
 	protected void onMidiMessage(MidiMessage message, long timestamp) {
@@ -31,13 +31,18 @@ public class BidirectionalMidiSession extends JavaxAppleMidiSession implements T
 	public void send(MidiMessage message, long timeStamp) {
 		io.github.leovr.rtipmidi.model.MidiMessage msg = new io.github.leovr.rtipmidi.model.MidiMessage(message.getMessage(), message.getLength()) {
 		};
-		try {
-			io.github.leovr.rtipmidi.model.AppleMidiServer s = null;
-			if(inetAddress!=null&&port>0){
-				s = new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port);
+
+		if (inetAddress != null && port > 0) {
+			try {
+				io.github.leovr.rtipmidi.model.AppleMidiServer s = new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port);
+				server.sendMidiMessage(Arrays.asList(msg), s);
+			} catch (Exception e) {
 			}
-			server.sendMidiMessage(Arrays.asList(msg), s);
-		} catch (Exception e) {
+		}else{
+			try {
+				server.sendMidiMessage(Arrays.asList(msg), null);
+			} catch (Exception e) {
+			}
 		}
 	}
 
@@ -46,7 +51,7 @@ public class BidirectionalMidiSession extends JavaxAppleMidiSession implements T
 		}).collect(Collectors.toList());
 		try {
 			io.github.leovr.rtipmidi.model.AppleMidiServer s = null;
-			if(inetAddress!=null&&port>0){
+			if (inetAddress != null && port > 0) {
 				s = new io.github.leovr.rtipmidi.model.AppleMidiServer(inetAddress, port);
 			}
 			server.sendMidiMessage(l1, s);

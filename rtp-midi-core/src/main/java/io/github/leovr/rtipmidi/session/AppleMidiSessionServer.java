@@ -234,18 +234,23 @@ public class AppleMidiSessionServer implements AppleMidiCommandListener, AppleMi
 	}
 
 	public void sendMidiMessage(List<MidiMessage> messages, AppleMidiServer appleMidiServer) throws Exception {
-		if (appleMidiServer == null && !currentSessions.isEmpty()) {
-			appleMidiServer = currentSessions.values().iterator().next().appleMidiServer;
-		}
 		MidiCommandHeader header = new MidiCommandHeader(false, false, false, false, (short) 0, new RtpHeader((byte) 2, false, false, (byte) 0, false, (byte) 97, sequenceNumber++, 0, ssrc));
-		final AppleMidiMessage msg = new AppleMidiMessage(header, messages);
-		send(new AppleMidiCommand(null, ssrc) {
+		AppleMidiMessage msg = new AppleMidiMessage(header, messages);
+		AppleMidiCommand amc = new AppleMidiCommand(null, ssrc) {
 
 			@Override
 			public byte[] toByteArray() throws IOException {
 				return msg.getBytes();
 			}
-		}, currentSessions.get(ssrc).getAppleMidiServer());
+		};
+		if (appleMidiServer != null) {
+			send(amc, appleMidiServer);
+		} else {
+			currentSessions.values().stream().forEach(o -> executorService.submit(() -> {
+				send(amc, o.appleMidiServer);
+				return null;
+			}));
+		}
 	}
 
 	/**
